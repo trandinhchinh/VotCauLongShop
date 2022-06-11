@@ -1,0 +1,72 @@
+﻿@page "/admin/dienthoais/edit/{id:long}"
+@page "/admin/dienthoais/create"
+@inherits OwningComponentBase<IShopDienThoaiRepository>
+<style>
+    div.validation-message {
+        color: rgb(220, 53, 69);
+        font-weight: 500
+    }
+</style>
+<h3 class="bg-@ThemeColor text-white text-center p-1">@TitleText Điện Thoại</h3>
+<EditForm Model="DienThoai" OnValidSubmit="SaveDienThoai">
+    <DataAnnotationsValidator />
+    @if (DienThoai.DienThoaiID != 0)
+    {
+        <div class="form-group">
+            <label>ID</label>
+            <input class="form-control" disabled value="@DienThoai.DienThoaiID" />
+        </div>
+    }
+    <div class="form-group">
+        <label>Title</label>
+        <ValidationMessage For="@(() => DienThoai.Title)" />
+        <InputText class="form-control" @bind-Value="DienThoai.Title" />
+    </div>
+    <div class="form-group">
+        <label>Description</label>
+        <ValidationMessage For="@(() => DienThoai.Description)" />
+        <InputText class="form-control" @bind-Value="DienThoai.Description" />
+    </div>
+    <div class="form-group">
+        <label>Genre</label>
+        <ValidationMessage For="@(() => DienThoai.Genre)" />
+        <InputText class="form-control" @bind-Value="DienThoai.Genre" />
+    </div>
+    <div class="form-group">
+        <label>Price</label>
+        <ValidationMessage For="@(() => DienThoai.Price)" />
+        <InputNumber class="form-control" @bind-Value="DienThoai.Price" />
+    </div>
+    <button type="submit" class="btn btn-@ThemeColor">Save</button>
+    <NavLink class="btn btn-secondary"
+             href="/admin/products">Cancel</NavLink>
+</EditForm>
+@code {
+    public IShopDienThoaiRepository Repository => Service;
+    [Inject]
+    public NavigationManager NavManager { get; set; }
+    [Parameter]
+    public long Id { get; set; } = 0;
+    public DienThoai DienThoai { get; set; } = new DienThoai();
+    protected override void OnParametersSet()
+    {
+        if (Id != 0)
+        {
+            DienThoai = Repository.DienThoais.FirstOrDefault(b => b.DienThoaiID == Id);
+        }
+    }
+    public void SaveDienThoai()
+    {
+        if (Id == 0)
+        {
+            Repository.CreateDienThoai(DienThoai);
+        }
+        else
+        {
+            Repository.SaveDienThoai(DienThoai);
+        }
+        NavManager.NavigateTo("/admin/dienthoais");
+    }
+    public string ThemeColor => Id == 0 ? "primary" : "warning";
+    public string TitleText => Id == 0 ? "Create" : "Edit";
+}

@@ -1,0 +1,68 @@
+﻿@page "/admin/dienthoais"
+@page "/admin"
+@inherits OwningComponentBase<IShopDienThoaiRepository>
+<table class="table table-sm table-striped table-bordered">
+    <thead>
+        <tr>
+            <th>DienThoaiID</th>
+            <th>Title</th>
+            <th>Genre</th>
+            <th>Price</th>
+            <td />
+        </tr>
+    </thead>
+    <tbody>
+        @if (DienThoaiData?.Count() > 0)
+        {
+            @foreach (DienThoai b in DienThoaiData)
+            {
+                <tr>
+                    <td>@b.DienThoaiID</td>
+                    <td>@b.Title</td>
+                    <td>@b.Genre</td>
+                    <td>@b.Price.ToString("c")</td>
+                    <td>
+                        <NavLink class="btn btn-info btn-sm"
+                                 href="@GetDetailsUrl(b.DienThoaiID)">
+                            Details
+                        </NavLink>
+                        <NavLink class="btn btn-warning btn-sm"
+                                 href="@GetEditUrl(b.DienThoaiID)">
+                            Edit
+                        </NavLink>
+                        <button class="btn btn-danger btn-sm"
+                                @onclick="@(e => DeleteDienThoai(b))">
+                            Delete
+                        </button>
+                    </td>
+                </tr>
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="5" class="text-center">No Phone</td>
+            </tr>
+        }
+    </tbody>
+</table>
+<NavLink class="btn btn-primary" href="/admin/dienthoais/create">Create</NavLink>
+@code {
+    public IShopDienThoaiRepository Repository => Service;
+    public IEnumerable<DienThoai> DienThoaiData { get; set; }
+    protected async override Task OnInitializedAsync()
+    {
+        await UpdateData();
+    }
+    public async Task UpdateData()
+    {
+        DienThoaiData = await Repository.DienThoais.ToListAsync();
+    }
+    public async Task DeleteDienThoai(DienThoai b)
+    {
+        Repository.DeleteDienThoai(b);
+        await UpdateData();
+    }
+    public string GetDetailsUrl(long id) => $"/admin/dienthoais/details/{id}";
+    public string GetEditUrl(long id) => $"/admin/dienthoais/edit/{id}";
+}

@@ -1,0 +1,25 @@
+﻿@page "/admin/dienthoais/details/{id:long}"
+<h3 class="bg-info text-white text-center p-1">Details</h3>
+<table class="table table-sm table-bordered table-striped">
+    <tbody>
+        <tr><th>DienThoaiID</th><td>@DienThoai.DienThoaiID</td></tr>
+        <tr><th>Title</th><td>@DienThoai.Title</td></tr>
+        <tr><th>Description</th><td>@DienThoai.Description</td></tr>
+        <tr><th>Genre</th><td>@DienThoai.Genre</td></tr>
+        <tr><th>Price</th><td>@DienThoai.Price.ToString("C")</td></tr>
+    </tbody>
+</table>
+<NavLink class="btn btn-warning" href="@EditUrl">Edit</NavLink>
+<NavLink class="btn btn-secondary" href="/admin/dienthoais">Back</NavLink>
+@code {
+    [Inject]
+    public IShopDienThoaiRepository Repository { get; set; }
+    [Parameter]
+    public long Id { get; set; }
+    public DienThoai DienThoai { get; set; }
+    protected override void OnParametersSet()
+    {
+        DienThoai = Repository.DienThoais.FirstOrDefault(b => b.DienThoaiID == Id);
+    }
+    public string EditUrl => $"/admin/dienthoais/edit/{DienThoai.DienThoaiID}";
+}
